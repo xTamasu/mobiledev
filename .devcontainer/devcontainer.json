@@ -1,0 +1,22 @@
+{
+  "name": "hetzner-devbox",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "dev",
+  "workspaceFolder": "/workspaces/devbox",
+
+  "forwardPorts": [
+    3000,
+    7681,
+    8080
+  ],
+
+  "postCreateCommand": "sudo apt update && sudo apt install -y curl git",
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}
