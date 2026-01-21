@@ -7,7 +7,8 @@
   "forwardPorts": [
     3000,
     7681,
-    8080
+    8080,
+    4096
   ],
 
   "postCreateCommand": "sudo apt update && sudo apt install -y curl git",

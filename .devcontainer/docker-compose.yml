@@ -10,21 +10,14 @@ services:
 
   ttyd:
     image: tsl0922/ttyd:latest
-    container_name: devbox-ttyd
-    command: ["-p", "7681", "bash"]
-    depends_on:
-      - dev
-    network_mode: service:dev
+    command: ["ttyd", "--writable", "-p", "7681", "bash"]
+    ports:
+      - "127.0.0.1:17681:7681"
 
-  # Platzhalter für später:
-  # opencode-api:
-  #   image: ghcr.io/opencode-ai/opencode:latest
-  #   ports:
-  #     - "127.0.0.1:3001:3001"
-  #
-  # opencode-web:
-  #   image: ghcr.io/chris-tse/opencode-web:latest
-  #   environment:
-  #     - OPENCODE_API_URL=http://opencode-api:3001
-  #   ports:
-  #     - "127.0.0.1:3000:3000"
+  opencode:
+    image: ghcr.io/anomalyco/opencode
+    environment:
+      - OPENCODE_SERVER_PASSWORD=${OPENCODE_SERVER_PASSWORD:-changeme}
+    command: ["web", "--hostname", "0.0.0.0", "--port", "4096"]
+    ports:
+      - "127.0.0.1:14096:4096"
