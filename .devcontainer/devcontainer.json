@@ -1,23 +1,31 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
 {
-  "name": "hetzner-devbox",
-  "dockerComposeFile": "docker-compose.yml",
-  "service": "dev",
-  "workspaceFolder": "/workspaces/devbox",
+	"name": "DevBox Ubuntu",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"image": "mcr.microsoft.com/devcontainers/base:noble",
+	"features": {
+		"ghcr.io/stu-bell/devcontainer-features/ttyd:0": {},
+		"ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {}
+	},
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/mobiledev,type=bind",
+	"workspaceFolder": "/home/vscode/mobiledev",
 
-  "forwardPorts": [
-    3000,
-    7681,
-    8080,
-    4096
-  ],
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
 
-  "postCreateCommand": "sudo apt update && sudo apt install -y curl git",
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	"forwardPorts": [4096, 7681],
 
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "ms-azuretools.vscode-docker"
-      ]
-    }
-  }
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+
+	// Run opencode web automatically on startup (in background)
+	"postStartCommand": "/bin/bash .devcontainer/start-opencode.sh"
+
+	// Configure tool-specific properties.
+	// "customizations": {},
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
 }
