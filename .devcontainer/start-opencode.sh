@@ -24,21 +24,53 @@ echo "Found opencode at: $OPENCODE_BIN" >> "$LOG"
 
 if [ -z "$OPENCODE_BIN" ] || [ ! -x "$OPENCODE_BIN" ]; then
     echo "ERROR: opencode binary not found!" >> "$LOG"
-    exit 1
+else
+    # Start opencode web in background with full path
+    echo "Starting opencode web..." >> "$LOG"
+    nohup "$OPENCODE_BIN" web >> "$LOG" 2>&1 &
+    PID=$!
+    echo "Started with PID: $PID" >> "$LOG"
+    
+    # Give it a moment to start and verify
+    sleep 2
+    if ps -p $PID > /dev/null 2>&1; then
+        echo "Process $PID is running" >> "$LOG"
+    else
+        echo "Process $PID died immediately" >> "$LOG"
+    fi
 fi
 
-# Start opencode web in background with full path
-echo "Starting opencode web..." >> "$LOG"
-nohup "$OPENCODE_BIN" web >> "$LOG" 2>&1 &
-PID=$!
-echo "Started with PID: $PID" >> "$LOG"
+# Find and start ttyd
+TTYD_BIN=""
+for loc in /usr/local/bin/ttyd /usr/bin/ttyd /home/vscode/.local/bin/ttyd $(which ttyd 2>/dev/null); do
+    if [ -x "$loc" ]; then
+        TTYD_BIN="$loc"
+        break
+    fi
+done
 
-# Give it a moment to start and verify
-sleep 2
-if ps -p $PID > /dev/null 2>&1; then
-    echo "Process $PID is running" >> "$LOG"
+if [ -z "$TTYD_BIN" ]; then
+    TTYD_BIN=$(find /home /usr -name "ttyd" -type f -executable 2>/dev/null | head -1)
+fi
+
+echo "Found ttyd at: $TTYD_BIN" >> "$LOG"
+
+if [ -z "$TTYD_BIN" ] || [ ! -x "$TTYD_BIN" ]; then
+    echo "ERROR: ttyd binary not found!" >> "$LOG"
 else
-    echo "Process $PID died immediately" >> "$LOG"
+    # Start ttyd in background
+    echo "Starting ttyd..." >> "$LOG"
+    nohup "$TTYD_BIN" -W -p 7681 bash >> "$LOG" 2>&1 &
+    PID=$!
+    echo "Started ttyd with PID: $PID" >> "$LOG"
+    
+    # Give it a moment to start and verify
+    sleep 1
+    if ps -p $PID > /dev/null 2>&1; then
+        echo "ttyd process $PID is running" >> "$LOG"
+    else
+        echo "ttyd process $PID died immediately" >> "$LOG"
+    fi
 fi
 
 exit 0
