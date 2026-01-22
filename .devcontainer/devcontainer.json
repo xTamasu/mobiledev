@@ -6,7 +6,8 @@
 	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
 		"ghcr.io/stu-bell/devcontainer-features/ttyd:0": {},
-		"ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {}
+		"ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
+		"ghcr.io/devcontainers-extra/features/vscode-server:1": {}
 	},
 	"workspaceMount": "source=${localWorkspaceFolder},target=/home/vscode/mobiledev,type=bind",
 	"workspaceFolder": "/home/vscode/mobiledev",
@@ -15,7 +16,7 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [4096, 7681],
+	"forwardPorts": [4096, 7681, 8080],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "uname -a",

@@ -73,4 +73,45 @@ else
     fi
 fi
 
+# Find and start vscode-server (code-server)
+echo "=== Looking for vscode-server/code-server ===" >> "$LOG"
+VSCODE_SERVER_BIN=""
+for loc in /usr/local/bin/code-server /usr/bin/code-server /home/vscode/.local/bin/code-server /home/vscode/code-server/bin/code-server $(which code-server 2>/dev/null); do
+    echo "Checking: $loc" >> "$LOG"
+    if [ -x "$loc" ]; then
+        VSCODE_SERVER_BIN="$loc"
+        break
+    fi
+done
+
+if [ -z "$VSCODE_SERVER_BIN" ]; then
+    echo "Searching filesystem..." >> "$LOG"
+    VSCODE_SERVER_BIN=$(find /home /usr /opt -name "code-server" -type f -executable 2>/dev/null | head -1)
+fi
+
+echo "Found vscode-server at: $VSCODE_SERVER_BIN" >> "$LOG"
+
+if [ -z "$VSCODE_SERVER_BIN" ] || [ ! -x "$VSCODE_SERVER_BIN" ]; then
+    echo "ERROR: vscode-server binary not found!" >> "$LOG"
+    echo "Available code-related binaries:" >> "$LOG"
+    find /usr /home /opt -name "*code*" -type f -executable 2>/dev/null | head -20 >> "$LOG"
+else
+    # Start vscode-server in background
+    echo "Starting vscode-server on port 8080..." >> "$LOG"
+    echo "Command: $VSCODE_SERVER_BIN --bind-addr 0.0.0.0:8080 --auth none --disable-telemetry" >> "$LOG"
+    nohup "$VSCODE_SERVER_BIN" --bind-addr 0.0.0.0:8080 --auth none --disable-telemetry /home/vscode/mobiledev >> "$LOG" 2>&1 &
+    PID=$!
+    echo "Started vscode-server with PID: $PID" >> "$LOG"
+    
+    # Give it time to start and verify
+    sleep 3
+    if ps -p $PID > /dev/null 2>&1; then
+        echo "vscode-server process $PID is running" >> "$LOG"
+        echo "Checking port 8080:" >> "$LOG"
+        netstat -tlnp 2>/dev/null | grep 8080 >> "$LOG" || ss -tlnp 2>/dev/null | grep 8080 >> "$LOG" || echo "Could not check port" >> "$LOG"
+    else
+        echo "vscode-server process $PID died immediately, check logs above for errors" >> "$LOG"
+    fi
+fi
+
 exit 0
