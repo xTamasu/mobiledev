@@ -5,6 +5,7 @@
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
 	"image": "mcr.microsoft.com/devcontainers/base:noble",
 	"features": {
+		"ghcr.io/devcontainers/features/docker-in-docker:2": {},
 		"ghcr.io/stu-bell/devcontainer-features/ttyd:0": {},
 		"ghcr.io/jsburckhardt/devcontainer-features/opencode:1": {},
 		"ghcr.io/devcontainers-extra/features/vscode-server:1": {}
